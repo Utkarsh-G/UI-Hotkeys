@@ -31,6 +31,42 @@ Hooks.once('ready', async function() {
 
 	console.log("UI-Hotkeys | Completed Hotkey Registration for controls UI")
 
+	//register sub menu keys
+	let index = 1
+
+	let key = Hotkeys.keys.Digit1
+
+	game.settings.register("UI-Hotkeys", `tool${index}`, {
+		scope: 'world',
+		config: false,
+		default: {
+			key: key,
+			alt: true,
+			ctrl: false,
+			shift: false
+		}
+	});
+
+	Hotkeys.registerShortcut({
+		name: `UI-Hotkeys.tool${index}`, // <- Must be unique
+		label: `Select tool #${index}`,
+		get: () => game.settings.get('UI-Hotkeys', `tool${index}`),
+		set: async value => await game.settings.set('UI-Hotkeys', `tool${index}`, value),
+		default: () => { return { key: key, alt: true, ctrl: false, shift: false }; },
+		onKeyDown: self => { 
+			//ui.controls._onClickLayer({ preventDefault: () => { }, currentTarget: { dataset: { control: control } } }) 
+			let tool_name = ui.controls.controls.find(control => control.name === ui.controls.activeControl).tools[index-1].name
+		
+			if (typeof tool_name !== 'undefined') {
+				ui.controls._onClickTool({ preventDefault: () => { }, currentTarget: { dataset: { tool: tool_name } } })
+			}
+			else 
+			{
+				console.log("No tool exists at that index")
+			}
+		},
+	});
+
 });
 
 function registerKeyAndShortcut( { control, key } ) {
